@@ -7,8 +7,8 @@ public class TicTacToe {
     private String mark;
     private Scanner scanner;
 
-    public TicTacToe(){
-        gridSize = 31;
+    public TicTacToe(int gridSize){
+        this.gridSize = gridSize;
         validCells = new ArrayList<>();
         board = new String[gridSize][gridSize];
         mark = "x";
@@ -61,22 +61,27 @@ public class TicTacToe {
     }
 
     public void play(){
+        System.out.println();
+        if (gridSize > 31 || gridSize < 3){
+            System.out.println("Invalid board size, please choose between 3 and 31");
+            return;
+        }
         while (true){
-            display();
             String input = getInput();
             int index = Integer.parseInt(input) -1;
             int row = findRow(index);
             int column = findCol(index);
             board[row][column] = mark;
-            display();
             boolean isGameOver = gameOverCheck(row, column);
             if (isGameOver){
                 String player = mark.equals("x") ? "1" : "2";
+                display();
                 System.out.println("Game over! Player " + player +" wins!");
                 break;
             }
             boolean isATie = tieCheck();
             if (isATie){
+                display();
                 System.out.println("Game over! It's a tie. :(");
                 break;
             }
@@ -88,9 +93,11 @@ public class TicTacToe {
         String currentPlayer = mark.equals("x") ? "1" : "2";
         String input = "";
         while (!(validCells.contains(input))) {
-            System.out.println("Player " + currentPlayer +", enter a cell number to mark with " + mark);
+            display();
+            System.out.println("Player " + currentPlayer +", enter a valid cell number to mark with " + mark);
             input = scanner.nextLine().trim();
         }
+        validCells.remove(input);
         return input;
     }
 
@@ -113,27 +120,44 @@ public class TicTacToe {
     }
 
     public boolean gameOverCheck(int row, int col){
-        //TODO check neighbours of index. note it cant just be any neighbours, has to form line of 3
-        //make methods: checkRight(), checkLeft(), checkUp(), checkDown(), checkDiagonals()
-        //if row index is 0 or 1, disregard checkUp, if row is n-1 n-2 disregard checkDown, likewise for left/right for col index
-        // real question is how to handle diagonals w/ edge cases.
+        // If valid, check: above 2 cells
         if(row != 0 && row != 1){
             if (checkUp(row,col)){
                 return true;
             }
         }
+        //below 2 cells
         if(row != gridSize -1 && row != gridSize -2){
             if (checkDown(row, col)){
                 return true;
             }
         }
-        if (col != 0){
-            boolean leftWinner = checkLeft(row, col);
-            if (leftWinner){
+        //left 2 cells
+        if (col != 0 && col != 1){
+            if (checkLeft(row, col)){
                 return true;
             }
         }
-        return false;
+        //right 2 cells
+        if (col != gridSize -1 && col != gridSize -2){
+            if (checkRight(row, col)){
+                return true;
+            }
+        }
+        //left and right cells
+        if (col != gridSize -1 && col != 0){
+            if (checkLeftRight(row, col)){
+                return true;
+            }
+        }
+        //above and below cells
+        if (row != gridSize -1 && row != 0){
+            if (checkUpDown(row, col)){
+                return true;
+            }
+        }
+        //if none of the above, check for diagonal win
+        return checkDiagonals(row, col);
     }
 
     public boolean checkUp(int row, int col){
@@ -145,11 +169,19 @@ public class TicTacToe {
     }
 
     public boolean checkLeft(int row, int col){
-        return false; //todo implement
+        return board[row][col].equals(board[row][col -1]) && board[row][col].equals(board[row][col - 2]);
     }
 
     public boolean checkRight(int row, int col){
-        return false; //todo implement
+        return board[row][col].equals(board[row][col +1]) && board[row][col].equals(board[row][col +2]);
+    }
+
+    public boolean checkLeftRight(int row, int col){
+        return board[row][col].equals(board[row][col -1]) && board[row][col].equals(board[row][col+1]);
+    }
+
+    public boolean checkUpDown(int row, int col){
+        return board[row][col].equals(board[row -1][col]) && board[row][col].equals(board[row +1][col]);
     }
 
     public boolean checkDiagonals(int row, int col){
@@ -217,11 +249,6 @@ public class TicTacToe {
                 return true;
             }
         }
-
-        /* cases: 1) all 4 are true, check all 4 diagonals
-                   2) 2 are true, check those 2
-                   3) 1 is true, check that 1
-        */
 
         return false;
     }
