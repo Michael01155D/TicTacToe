@@ -8,31 +8,45 @@ public class TicTacToe {
     private Scanner scanner;
 
     public TicTacToe(){
-        gridSize = 20;
+        gridSize = 31;
         validCells = new ArrayList<>();
         board = new String[gridSize][gridSize];
         mark = "x";
         scanner = new Scanner(System.in);
         makeNewBoard();
     }
-        //
+
     public void display() {
         String border = "";
         for (int i = 0; i < gridSize; i++){
-            border += "--------";
+            border += "-------";
         }
-        border+= "--";
+        border+= "----";
         System.out.println(border);
 
         for (int i = 0; i < board.length; i++) {
             System.out.print("| ");
             for (int j = 0; j < board[0].length; j++) {
-                printCell(board[i][j].length(), i, j);
+                printCell(board[i][j].length(), i, j); //adjust spacing btwn num and brackets depending on # digits
             }
             System.out.println(" |");
         }
         System.out.println(border);
     }
+
+    public void printCell(int digits, int i, int j){
+        if (digits == 3){
+            System.out.print("[ " +board[i][j]+" ]");
+        }
+        if (digits == 1) {
+            System.out.print("[  "+ board[i][j] + "  ]");
+        }
+        if (digits == 2){
+            System.out.print("[  " + board[i][j] + " ]");
+        }
+    }
+
+
     public void makeNewBoard(){
         board = new String[gridSize][gridSize];
         validCells.clear();
@@ -135,16 +149,6 @@ public class TicTacToe {
         mark = mark.equals("x") ? "o" : "x";
     }
 
-    public void printCell(int digits, int i, int j){
-        if (digits == 3){
-            System.out.print("[ " +board[i][j]+" ]");
-        }
-        if (digits == 1) {
-            System.out.print("[  "+ board[i][j] + "  ]");
-        }
-        if (digits == 2){
-            System.out.print("[  " + board[i][j] + " ]");
-        }
-    }
+
 }
 
