@@ -3,13 +3,12 @@ import java.util.*;
 public class TicTacToe {
     private String [][] board;
     private int gridSize;
-    private int cellNum;
     private ArrayList<String> validCells;
     private String mark;
     private Scanner scanner;
 
     public TicTacToe(){
-        gridSize = 4;
+        gridSize = 20;
         validCells = new ArrayList<>();
         board = new String[gridSize][gridSize];
         mark = "x";
@@ -37,7 +36,7 @@ public class TicTacToe {
     public void makeNewBoard(){
         board = new String[gridSize][gridSize];
         validCells.clear();
-        cellNum = 1;
+        int cellNum = 1;
         for (int i = 0; i < gridSize; i++){
             for (int j = 0; j < gridSize; j++){
                 board[i][j] = ""+cellNum;
@@ -56,17 +55,18 @@ public class TicTacToe {
             int column = findCol(index);
             board[row][column] = mark;
             display();
-            //find the pattern
-            ///    1 2 3 4
-            //     5 6 7 8
-            //     9 10 11 12
-            //     13 14 15 16
-
-            //exs: index = 3, then cell is @ [0][3]
-            //     index = 12, then cell is @ [3][0]  i = index / n, j = index % n ? if i > n
-            //     index = 5, then cell is @ [1][1], i = index /n; j = index % n ?
-            mark = mark.equals("x") ? "o" : "x";
-
+            boolean isGameOver = gameOverCheck(row, column);
+            if (isGameOver){
+                String player = mark.equals("x") ? "1" : "2";
+                System.out.println("Game over! Player " + player +" wins!");
+                break;
+            }
+            boolean isATie = tieCheck();
+            if (isATie){
+                System.out.println("Game over! It's a tie. :(");
+                break;
+            }
+            changePlayer();
         }
     }
 
@@ -81,6 +81,16 @@ public class TicTacToe {
     }
 
     public int findRow(int index){
+        /*Leaving this in to remind myself of process I took to figure it out:
+        find the pattern
+            1 2 3 4
+            5 6 7 8
+            9 10 11 12
+           13 14 15 16
+        exs: index = 3, then cell is @ [0][3]
+             index = 12, then cell is @ [3][0]  i = index / n, j = index % n  if i >= n
+             index = 5, then cell is @ [1][1], i = index /n; j = index % n if i >= n
+             */
      return index >= gridSize ? index / gridSize : 0;
     }
 
@@ -88,16 +98,51 @@ public class TicTacToe {
         return index >= gridSize ? index % gridSize : index;
     }
 
-    public boolean checkWinner(String chosenTile){
-        int index = Integer.parseInt(chosenTile) - 1;
-        //check neighbours of index. if 2 neighbours have same mark, gg.
+    public boolean gameOverCheck(int row, int col){
+        //TODO check neighbours of index. note it cant just be any neighbours, has to form line of 3
+        //make methods: checkRight(), checkLeft(), checkUp(), checkDown(), checkDiagonals()
+        //if row index is 0 or 1, disregard checkUp, if row is n-1 n-2 disregard checkDown, likewise for left/right for col index
+        // real question is how to handle diagonals w/ edge cases.
+        if(row != 0 && row != 1){
+            boolean upWinner = checkUp(row, col);
+        }
+        if(row != gridSize -1 && row != gridSize -2){
+            boolean downWinner = checkDown(row, col);
+        }
         return false;
     }
 
+    public boolean checkUp(int row, int col){
+        return board[row][col].equals(board[row - 1][col]) && board[row][col].equals(board[row - 2][col]);
+    };
+
+    public boolean checkDown(int row, int col){
+        return board[row][col].equals(board[row + 1][col]) && board[row][col].equals(board[row+2][col]);
+    }
+
+    public boolean tieCheck(){
+        for(int i = 0; i < gridSize; i++){
+            for(int j = 0; j < gridSize; j++){
+                if(!(board[i][j].equals("x") || board[i][j].equals("o"))){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void changePlayer(){
+        mark = mark.equals("x") ? "o" : "x";
+    }
+
     public void printCell(int digits, int i, int j){
+        if (digits == 3){
+            System.out.print("[ " +board[i][j]+" ]");
+        }
         if (digits == 1) {
             System.out.print("[  "+ board[i][j] + "  ]");
-        } else {
+        }
+        if (digits == 2){
             System.out.print("[  " + board[i][j] + " ]");
         }
     }
