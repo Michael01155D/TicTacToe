@@ -7,13 +7,22 @@ public class TicTacToe {
     private String mark;
     private Scanner scanner;
 
-    public TicTacToe(int gridSize){
+    private boolean vsAI;
+
+    private String humanPlayerMark;
+
+    public TicTacToe(int gridSize, boolean vsAI){
         this.gridSize = gridSize;
+        this.vsAI = vsAI;
         validCells = new ArrayList<>();
         board = new String[gridSize][gridSize];
         mark = "x";
         scanner = new Scanner(System.in);
         makeNewBoard();
+    }
+
+    public TicTacToe(int gridSize){
+        this(gridSize, false);
     }
 
     public void display() {
@@ -66,8 +75,24 @@ public class TicTacToe {
             System.out.println("Invalid board size, please choose between 3 and 31");
             return;
         }
+
+        if (vsAI){
+            String input = "_";
+            while (!input.equals("1") && !input.equals("2")){
+                System.out.println("Type 1 to go first, type 2 to go second.");
+                input = scanner.nextLine();
+            }
+            humanPlayerMark = input.equals("1") ? "x" : "o";
+        }
+
         while (true){
-            String input = getInput();
+            String input = "";
+            if (!vsAI || humanPlayerMark.equals(mark)) {
+                input = getInput();
+            }
+            else {
+                input = getComputerInput();
+            }
             int index = Integer.parseInt(input) -1;
             int row = findRow(index);
             int column = findCol(index);
@@ -98,6 +123,23 @@ public class TicTacToe {
             input = scanner.nextLine().trim();
         }
         validCells.remove(input);
+        return input;
+    }
+
+    public String getComputerInput(){
+        String input = "";
+        //pick the first available cell whose next neighbour isn't +1.
+        for (int i = 0; i < validCells.size() - 1; i++){
+            int current = Integer.parseInt(validCells.get(i));
+            int next = Integer.parseInt(validCells.get(i + 1));
+            if (next - current != 1){
+                input = validCells.get(i);
+                validCells.remove(i);
+                return input;
+            }
+        }
+        input = validCells.get(validCells.size() -1);
+        validCells.remove(validCells.size() -1);
         return input;
     }
 
