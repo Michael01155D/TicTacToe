@@ -4,8 +4,8 @@ Board can be any square size between 31 >= n >= 3
 
 command line usage:
 
-no args: standard 3x3 game
+no args: -> standard 2-player 3x3 game
 
-1 arg: board_size (between 3 to 31, inclusive)
+1 arg: board_size (between 3 to 31, inclusive) -> 2-player game
 
-2 args: board_size, ai  (play vs. a very simple AI bot) 
+2 args: board_size, ai  (play vs. a very simple AI bot) -> 1 player game
